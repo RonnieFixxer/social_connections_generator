@@ -1,4 +1,5 @@
-{
+{ 
+  "type": "module",
   "name": "tech_task_grandysoft",
   "version": "1.0.0",
   "description": "Node.js with Express, PostgreSQL",

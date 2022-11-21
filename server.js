@@ -1,22 +1,13 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
+import express from 'express';
+import { allUsersWithSubscribers } from './app/config/database.mjs';
+import { allUsers, allSubscribers } from './app/config/database.mjs';
+const app = express()
+const port = 3000
 
-const app = express();
-
-let corsOptions = {
-    origin: "http://localhost:8081"
-  };
-
-app.use(cors(corsOptions));
-
-app.use(express.json());
-
-app.get("/", (req, res) => {
-  res.json({ message: "Welcome home." });
+app.get('/users', (req, res) => {
+  res.send(allSubscribers.rows)
 });
 
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
 });

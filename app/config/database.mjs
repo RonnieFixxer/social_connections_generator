@@ -1,6 +1,7 @@
 import pkg from 'pg';
 import { faker } from '@faker-js/faker';
 
+
 const { Client } = pkg;
 
 const client = new Client({
@@ -12,25 +13,16 @@ const client = new Client({
 
 await client.connect(); //connect
 
-function getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-const randomNum = getRandomInt(0, 200);
+import { 
+    getRandomInt, 
+    subscribersTableCreateQuery,
+    userTableCreateQuery,
+    dataBaseUsers,
+    dataBaseSubscribers,
+    createUsersQuery,
+} from '../controllers/controllers.js'; 
 
-
-const users = [];
-
-for (let i = 0; i <= 5; i++) {
-    users.push({
-       name:  faker.name.firstName(),
-       gender: faker.name.sexType(),
-    })
-}
-
-
-const execute = async (query) => {
+const sendData = async (query) => {
     try {
         await client.query(query);
         return true;
@@ -40,53 +32,98 @@ const execute = async (query) => {
     } 
 };
 
-const userTableQuery = `
-    CREATE TABLE IF NOT EXISTS "users" (
-	    "id" SERIAL,
-	    "first_name" VARCHAR(100) NOT NULL,
-	    "gender" VARCHAR(15) NOT NULL,
-	    PRIMARY KEY ("id")
-    );`
+const getData = async (query) => {
+    try {
+        const data = await client.query(query);
+        return data;
+    } catch (error) {
+        console.error(error.stack);
+        return false;
+    } 
+};
 
-const createUsersQuery = (userName, userGender) => (`
-    INSERT INTO users (first_name, gender) 
-    VALUES ('${userName}', '${userGender}');
-`);
+const randomNum = getRandomInt(0, 200);
 
-await execute(userTableQuery).then(result => {
+const localUsers = [];
+
+for (let i = 0; i <= randomNum; i++) {
+    localUsers.push({
+       name:  faker.name.firstName(),
+       gender: faker.name.sexType(),
+    })
+}
+
+await sendData(userTableCreateQuery).then(result => {
     if (!result) {
         return;
     }
 
-    Promise.all(users.map(user => {
-        execute(createUsersQuery(user.name, user.gender))
+    Promise.all(localUsers.map(user => {
+        sendData(createUsersQuery(user.name, user.gender))
     }));
 
-    
     console.log('Table created');
 });
 
-const getDataBaseUsers = await client.query(`
-    SELECT *
-    from users
-`);
+export const allUsers = await getData(dataBaseUsers);
+export const allSubscribers = await getData(dataBaseSubscribers);
 
-console.log(getDataBaseUsers.rows)
-
-const friendsTableQuery = `
-    CREATE TABLE IF NOT EXISTS "friends" (
-	    "id" SERIAL,
-        "user_name" VARCHAR(100) NOT NULL,
-	    "user_id" VARCHAR(100) NOT NULL,
-	    "friends" VARCHAR(15) NOT NULL,
-	    PRIMARY KEY ("id")
-    );`
-
-await execute(friendsTableQuery).then(result => {
+await sendData(subscribersTableCreateQuery).then(result => {
     if (!result) {
         return;
     }  
-    console.log('Table friends created');
+    console.log('Table subscribers created');
 });
+
+const  addSubscribers = async (userId, friendId) => {
+    const getUserQuery = (userId) => (`
+        SELECT *
+        from user_subscriptions
+        where user_id = '${userId}'
+    `)
+
+    const addSubscribersQuery = (userId, friendId) => ( `
+        INSERT INTO user_subscriptions(user_id, friend_id) VALUES('${userId}', '${friendId}')
+    `)
+
+    const user = await getData(getUserQuery(userId));
+
+    if (user.rows.every(item => item.friend_id !== friendId) && userId !== friendId) {
+
+        await sendData(addSubscribersQuery(userId, friendId)).then(result => {
+            if (!result) {
+                return;
+            }  
+            console.log('friend added');
+        });
+    };
+}
+
+// for (let i = 0; i < allUsers.rows.length; i++) {
+//     await addSubscribers(getRandomInt(0, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
+// }
+
+export const allUsersWithSubscribers = await client.query(`
+    SELECT users.id AS id, first_name AS name, COUNT(friend_id) AS subscribers
+    from users
+    JOIN user_subscriptions
+    ON users.id = user_subscriptions.user_id
+    GROUP BY users.id
+`);
+
+const getUserFriends = (userId) => {
+    const userSubscribers = allSubscribers.rows.filter(el => el.user_id === userId)
+    const usersSubscribedOn = allSubscribers.rows.filter(el => el.friend_id === userId)
+
+    const mutualSubscription = usersSubscribedOn.filter(user => userSubscribers
+        .find(el => el.friend_id === user.user_id));
+    
+    const friends = allUsers.rows.filter(user =>  mutualSubscription
+        .find(el => el.user_id === user.id))
+
+    console.log(friends)
+};
+
+getUserFriends(240);
 
 await client.end(); //disconect

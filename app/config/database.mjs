@@ -111,19 +111,6 @@ export const allUsersWithSubscribers = await client.query(`
     GROUP BY users.id
 `);
 
-const getUserFriends = (userId) => {
-    const userSubscribers = allSubscribers.rows.filter(el => el.user_id === userId)
-    const usersSubscribedOn = allSubscribers.rows.filter(el => el.friend_id === userId)
 
-    const mutualSubscription = usersSubscribedOn.filter(user => userSubscribers
-        .find(el => el.friend_id === user.user_id));
-    
-    const friends = allUsers.rows.filter(user =>  mutualSubscription
-        .find(el => el.user_id === user.id))
-
-    console.log(friends)
-};
-
-getUserFriends(240);
 
 await client.end(); //disconect

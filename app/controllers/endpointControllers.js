@@ -10,7 +10,21 @@ function dynamicSort(property) {
         var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
         return result * sortOrder;
     }
+};
+
+function addSubscriptionsToUser(allUsers, allSubscribers) {
+    let usersWithSubscribtions = [];
+
+    allUsers.rows.forEach(element => {
+        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
+        const userSubscriptionsAllInfo = allUsers.rows
+            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
+        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
+    });
+
+    return usersWithSubscribtions;
 }
+
 
 const getUserFriends = (userId, allUsers, allSubscribers) => {
     const userSubscribers = allSubscribers.rows.filter(el => el.user_id === userId)
@@ -50,56 +64,30 @@ export function getUserWithfriends (req, res) {
 }
 
 export function getUsersWithSubscribtions (req, res) {
-    let usersWithSubscribtions = [];
-
-    allUsers.rows.forEach(element => {
-        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
-        const userSubscriptionsAllInfo = allUsers.rows
-            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
-        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
-    });
-
-    res.send(usersWithSubscribtions);
+    res.send(addSubscriptionsToUser(allUsers, allSubscribers));
 };
 
-// repeated code
 export function topfiveUsers (req, res) {
-    let usersWithSubscribtions = [];
 
-    allUsers.rows.forEach(element => {
-        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
-        const userSubscriptionsAllInfo = allUsers.rows
-            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
-        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
-    });
-
-    const sortedusersWithSubscribtions = usersWithSubscribtions
+    const sortedusersWithSubscribtions = addSubscriptionsToUser(allUsers, allSubscribers)
         .sort(function (a, b) {
             if (a.subscriptions.length < b.subscriptions.length) {
-            return 1;
+                return 1;
             }
             if (a.subscriptions.length > b.subscriptions.length) {
-            return -1;
+                return -1;
             }
-            return 0;
+                return 0;
         });
 
     res.send(sortedusersWithSubscribtions.slice(0, 5))
 };
 
 export function usersWithNullSubsciptions (req, res) {
-    let usersWithSubscribtions = [];
-
-    allUsers.rows.forEach(element => {
-        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
-        const userSubscriptionsAllInfo = allUsers.rows
-            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
-        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
-    });
-
-    const sortedusersWithSubscribtions = usersWithSubscribtions
+    const sortedusersWithSubscribtions = addSubscriptionsToUser(allUsers,allSubscribers)
         .filter(el => el.subscriptions.length === 0);
 
     res.send(sortedusersWithSubscribtions)
 };
+
 

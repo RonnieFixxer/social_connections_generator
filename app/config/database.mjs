@@ -46,12 +46,12 @@ const randomNum = getRandomInt(0, 200);
 
 const localUsers = [];
 
-for (let i = 0; i <= randomNum; i++) {
-    localUsers.push({
-       name:  faker.name.firstName(),
-       gender: faker.name.sexType(),
-    })
-}
+// for (let i = 0; i <= randomNum; i++) {
+//     localUsers.push({
+//        name:  faker.name.firstName(),
+//        gender: faker.name.sexType(),
+//     })
+// }
 
 await sendData(userTableCreateQuery).then(result => {
     if (!result) {

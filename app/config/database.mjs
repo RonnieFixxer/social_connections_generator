@@ -111,6 +111,7 @@ export const allUsersWithSubscribers = await client.query(`
     GROUP BY users.id
 `);
 
+const topfiveUsers = ``
 
 
 await client.end(); //disconect

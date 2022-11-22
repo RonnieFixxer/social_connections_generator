@@ -62,5 +62,44 @@ export function getUsersWithSubscribtions (req, res) {
     res.send(usersWithSubscribtions);
 };
 
+// repeated code
+export function topfiveUsers (req, res) {
+    let usersWithSubscribtions = [];
 
+    allUsers.rows.forEach(element => {
+        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
+        const userSubscriptionsAllInfo = allUsers.rows
+            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
+        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
+    });
+
+    const sortedusersWithSubscribtions = usersWithSubscribtions
+        .sort(function (a, b) {
+            if (a.subscriptions.length < b.subscriptions.length) {
+            return 1;
+            }
+            if (a.subscriptions.length > b.subscriptions.length) {
+            return -1;
+            }
+            return 0;
+        });
+
+    res.send(sortedusersWithSubscribtions.slice(0, 5))
+};
+
+export function usersWithNullSubsciptions (req, res) {
+    let usersWithSubscribtions = [];
+
+    allUsers.rows.forEach(element => {
+        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
+        const userSubscriptionsAllInfo = allUsers.rows
+            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
+        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
+    });
+
+    const sortedusersWithSubscribtions = usersWithSubscribtions
+        .filter(el => el.subscriptions.length === 0);
+
+    res.send(sortedusersWithSubscribtions)
+};
 

@@ -26,7 +26,7 @@ const getUserFriends = (userId, allUsers, allSubscribers) => {
         return [user, friends]
 };
 
-export function sendUserWithfriends (req, res) {
+export function getUserWithfriends (req, res) {
     const test = {
         userId: +req.params.id,
         orderBy: req.query.order_by,
@@ -48,4 +48,19 @@ export function sendUserWithfriends (req, res) {
 
     res.send(userWithFriends)
 }
+
+export function getUsersWithSubscribtions (req, res) {
+    let usersWithSubscribtions = [];
+
+    allUsers.rows.forEach(element => {
+        const userSubscriptions = allSubscribers.rows.filter(el => el.user_id === element.id);
+        const userSubscriptionsAllInfo = allUsers.rows
+            .filter(el => userSubscriptions.find(user => el.id === user.friend_id));
+        usersWithSubscribtions.push({...element, subscriptions: userSubscriptionsAllInfo})
+    });
+
+    res.send(usersWithSubscribtions);
+};
+
+
 

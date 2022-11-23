@@ -1,6 +1,6 @@
 import pkg from 'pg';
 import { faker } from '@faker-js/faker';
-
+import { argv } from 'node:process';
 
 const { Client } = pkg;
 
@@ -42,16 +42,16 @@ const getData = async (query) => {
     } 
 };
 
-const randomNum = getRandomInt(0, 200);
+const randomNum = getRandomInt(0, argv[2]);
 
 const localUsers = [];
 
-// for (let i = 0; i <= randomNum; i++) {
-//     localUsers.push({
-//        name:  faker.name.firstName(),
-//        gender: faker.name.sexType(),
-//     })
-// }
+for (let i = 0; i <= randomNum; i++) {
+    localUsers.push({
+       name:  faker.name.firstName(),
+       gender: faker.name.sexType(),
+    })
+}
 
 await sendData(userTableCreateQuery).then(result => {
     if (!result) {
@@ -99,9 +99,9 @@ const  addSubscribers = async (userId, friendId) => {
     };
 }
 
-// for (let i = 0; i < allUsers.rows.length; i++) {
-//     await addSubscribers(getRandomInt(0, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
-// }
+for (let i = 0; i < allUsers.rows.length; i++) {
+    await addSubscribers(getRandomInt(0, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
+}
 
 export const allUsersWithSubscribers = await client.query(`
     SELECT users.id AS id, first_name AS name, COUNT(friend_id) AS subscribers

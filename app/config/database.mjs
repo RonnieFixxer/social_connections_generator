@@ -65,15 +65,15 @@ await sendData(userTableCreateQuery).then(result => {
   console.log('Table created')
 })
 
-export const allUsers = await getData(dataBaseUsers)
-export const allSubscribers = await getData(dataBaseSubscribers)
-
 await sendData(subscribersTableCreateQuery).then(result => {
   if (!result) {
     return
   }
   console.log('Table subscribers created')
 })
+
+export const allUsers = await getData(dataBaseUsers)
+export const allSubscribers = await getData(dataBaseSubscribers)
 
 const addSubscribers = async (userId, friendId) => {
   const getUserQuery = (userId) => (`
@@ -99,7 +99,7 @@ const addSubscribers = async (userId, friendId) => {
 }
 
 for (let i = 0; i < allUsers.rows.length; i++) {
-  await addSubscribers(getRandomInt(0, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
+  await addSubscribers(getRandomInt(1, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
 }
 
 export const allUsersWithSubscribers = await client.query(`

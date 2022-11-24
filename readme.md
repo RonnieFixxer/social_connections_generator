@@ -8,7 +8,7 @@
     5. Run app: npm run start <amount of users>;
     6. Endpoints to check users: 
         1) /users (to get all users with subscriptions);
-        2) /users/123/friends?order_by=id&order_type=desc (to get information about the user with friends and available sorting by the specified field. For friends we  consider mutual subscription);
+        2) /users/123/friends?order_by=id&order_type=desc (to get information about the user with friends and available sorting by order_by and order_type. For friends we  consider mutual subscription);
         3) /max-following (getting the top 5 users who made the most subscriptions);
         4) /not-following (receiving users who have made 0 subscriptions).
 

@@ -1,7 +1,7 @@
+import * as dotenv from 'dotenv'
 import pkg from 'pg'
 import { faker } from '@faker-js/faker'
 import { argv } from 'node:process'
-
 import {
   getRandomInt,
   subscribersTableCreateQuery,
@@ -10,15 +10,18 @@ import {
   dataBaseSubscribers,
   createUsersQuery
 } from '../controllers/dataBaseControllers.js'
+dotenv.config()
 
 const { Client } = pkg
 
 const client = new Client({
-  host: '127.0.0.1',
-  user: 'postgres',
-  password: 'manowars',
-  port: 5432
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  port: process.env.DB_PORT
 })
+
+console.log(process.env.DB_HOST)
 
 await client.connect()
 

@@ -1,6 +1,6 @@
 # Social connections generator
 
-### How use this app:
+### How use this app
     1. Clone app: ```git clone <the-link-from-repo>```;
     2. Open the project folder in your IDE;
     3. Open a terminal in the project folder;

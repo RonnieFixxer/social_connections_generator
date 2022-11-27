@@ -1,7 +1,7 @@
 # Social connections generator
 
 ### How use this app
-    1. Clone app: ```git clone <the-link-from-repo>```;
+    Clone app: ```git clone <the-link-from-repo>```;
     2. Open the project folder in your IDE;
     3. Open a terminal in the project folder;
     4. Run ```npm install (or just npm i)``` to install the dependencies;

@@ -16,12 +16,11 @@ const { Client } = pkg
 
 const client = new Client({
   host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT
 })
-
-console.log(process.env.DB_HOST)
 
 await client.connect()
 
@@ -45,11 +44,9 @@ const getData = async (query) => {
   }
 }
 
-const randomNum = getRandomInt(0, argv[2])
-
 const localUsers = []
 
-for (let i = 0; i <= randomNum; i++) {
+for (let i = 0; i <= argv[2]; i++) {
   localUsers.push({
     name: faker.name.firstName(),
     gender: faker.name.sexType()
@@ -76,7 +73,6 @@ await sendData(subscribersTableCreateQuery).then(result => {
 })
 
 export const allUsers = await getData(dataBaseUsers)
-export const allSubscribers = await getData(dataBaseSubscribers)
 
 const addSubscribers = async (userId, friendId) => {
   const getUserQuery = (userId) => (`
@@ -102,15 +98,17 @@ const addSubscribers = async (userId, friendId) => {
 }
 
 for (let i = 0; i < allUsers.rows.length; i++) {
-  await addSubscribers(getRandomInt(1, allUsers.rows.length), getRandomInt(0, allUsers.rows.length))
+  const userId = getRandomInt(1, allUsers.rows.length)
+
+  for (let i = 0; i <= getRandomInt(1, allUsers.rows.length); i++) {
+    const friendId = getRandomInt(1, allUsers.rows.length)
+
+    if (userId !== friendId) {
+      await addSubscribers(userId, friendId)
+    }
+  }
 }
 
-export const allUsersWithSubscribers = await client.query(`
-    SELECT users.id AS id, first_name AS name, COUNT(friend_id) AS subscribers
-    from users
-    JOIN user_subscriptions
-    ON users.id = user_subscriptions.user_id
-    GROUP BY users.id
-`)
+export const allSubscribers = await getData(dataBaseSubscribers)
 
 await client.end()

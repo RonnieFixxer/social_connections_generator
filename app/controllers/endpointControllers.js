@@ -1,4 +1,4 @@
-import { allUsers, allSubscribers } from '../config/database.mjs'
+import { allUsers, allSubscribers } from '../config/database.js'
 import { dynamicSort } from './dataBaseControllers.js'
 
 function addSubscriptionsToUser (allUsers, allSubscribers) {

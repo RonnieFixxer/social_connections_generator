@@ -47,3 +47,6 @@ export const dataBaseSubscribers = `
 SELECT *
     from user_subscriptions
 `
+export const deleteTables = `
+DROP TABLE users, user_subscriptions
+`
